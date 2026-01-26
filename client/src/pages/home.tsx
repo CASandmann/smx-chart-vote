@@ -28,7 +28,11 @@ export default function Home() {
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  const { data: charts, isLoading: chartsLoading, isError: chartsError } = useQuery<ChartWithSong[]>({
+  const {
+    data: charts,
+    isLoading: chartsLoading,
+    isError: chartsError,
+  } = useQuery<ChartWithSong[]>({
     queryKey: ["/api/charts"],
   });
 
@@ -37,7 +41,13 @@ export default function Home() {
   });
 
   const voteMutation = useMutation({
-    mutationFn: async ({ chartId, voteType }: { chartId: number; voteType: "up" | "down" }) => {
+    mutationFn: async ({
+      chartId,
+      voteType,
+    }: {
+      chartId: number;
+      voteType: "up" | "down";
+    }) => {
       return apiRequest("POST", "/api/votes", { chartId, voteType });
     },
     onSuccess: () => {
@@ -60,22 +70,28 @@ export default function Home() {
     },
   });
 
-  const handleVote = useCallback((chartId: number, voteType: "up" | "down") => {
-    if (!isAuthenticated) {
-      toast({
-        title: "Login Required",
-        description: "Please log in to vote on charts.",
-        variant: "destructive",
-      });
-      return;
-    }
-    voteMutation.mutate({ chartId, voteType });
-  }, [voteMutation, isAuthenticated, toast]);
+  const handleVote = useCallback(
+    (chartId: number, voteType: "up" | "down") => {
+      if (!isAuthenticated) {
+        toast({
+          title: "Login Required",
+          description: "Please log in to vote on charts.",
+          variant: "destructive",
+        });
+        return;
+      }
+      voteMutation.mutate({ chartId, voteType });
+    },
+    [voteMutation, isAuthenticated, toast],
+  );
 
-  const handleDifficultyRangeChange = useCallback((min: number, max: number) => {
-    setMinDifficulty(min);
-    setMaxDifficulty(max);
-  }, []);
+  const handleDifficultyRangeChange = useCallback(
+    (min: number, max: number) => {
+      setMinDifficulty(min);
+      setMaxDifficulty(max);
+    },
+    [],
+  );
 
   const clearAllFilters = useCallback(() => {
     setSearchQuery("");
@@ -100,15 +116,17 @@ export default function Home() {
 
     let result = charts.filter((chart) => {
       const query = searchQuery.toLowerCase();
-      const matchesSearch = !query || 
+      const matchesSearch =
+        !query ||
         chart.song.title.toLowerCase().includes(query) ||
         chart.song.artist.toLowerCase().includes(query);
-      
-      const matchesDifficultyType = difficultyFilter === "all" || 
+
+      const matchesDifficultyType =
+        difficultyFilter === "all" ||
         chart.difficulty_name === difficultyFilter;
-      
-      const matchesDifficultyRange = chart.difficulty >= minDifficulty && 
-        chart.difficulty <= maxDifficulty;
+
+      const matchesDifficultyRange =
+        chart.difficulty >= minDifficulty && chart.difficulty <= maxDifficulty;
 
       return matchesSearch && matchesDifficultyType && matchesDifficultyRange;
     });
@@ -147,7 +165,15 @@ export default function Home() {
     });
 
     return result;
-  }, [charts, searchQuery, difficultyFilter, minDifficulty, maxDifficulty, sortBy, voteCountMap]);
+  }, [
+    charts,
+    searchQuery,
+    difficultyFilter,
+    minDifficulty,
+    maxDifficulty,
+    sortBy,
+    voteCountMap,
+  ]);
 
   const totalVotes = useMemo(() => {
     if (!voteCounts) return 0;
@@ -156,7 +182,7 @@ export default function Home() {
 
   const uniqueSongCount = useMemo(() => {
     if (!charts) return 0;
-    const songIds = new Set(charts.map(c => c.song_id));
+    const songIds = new Set(charts.map((c) => c.song_id));
     return songIds.size;
   }, [charts]);
 
@@ -172,10 +198,12 @@ export default function Home() {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasMore) {
-          setVisibleCount((prev) => Math.min(prev + ITEMS_PER_PAGE, filteredAndSortedCharts.length));
+          setVisibleCount((prev) =>
+            Math.min(prev + ITEMS_PER_PAGE, filteredAndSortedCharts.length),
+          );
         }
       },
-      { threshold: 0.1, rootMargin: "100px" }
+      { threshold: 0.1, rootMargin: "100px" },
     );
 
     const currentRef = loadMoreRef.current;
@@ -194,13 +222,13 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4 mb-4">
+          <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="difficulty-gradient p-2 rounded-md">
                 <Music2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold">SMX Chart Voter</h1>
+                <h1 className="text-xl font-bold">StepManiaX Chart Voter</h1>
                 <p className="text-sm text-muted-foreground hidden sm:block">
                   Vote on chart difficulty ratings
                 </p>
@@ -212,12 +240,17 @@ export default function Home() {
               ) : isAuthenticated && user ? (
                 <div className="flex items-center gap-2">
                   <Avatar className="w-8 h-8">
-                    <AvatarImage src={user.profileImageUrl || undefined} alt={user.firstName || "User"} />
+                    <AvatarImage
+                      src={user.profileImageUrl || undefined}
+                      alt={user.firstName || "User"}
+                    />
                     <AvatarFallback>
                       {user.firstName?.[0] || user.email?.[0] || "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm hidden sm:inline">{user.firstName || user.email}</span>
+                  <span className="text-sm hidden sm:inline">
+                    {user.firstName || user.email}
+                  </span>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -272,9 +305,13 @@ export default function Home() {
             <EmptyState type="no-results" onClearFilters={clearAllFilters} />
           ) : (
             <div className="space-y-3">
-              <p className="text-sm text-muted-foreground" data-testid="text-showing-count">
-                Showing {visibleCharts.length} of {filteredAndSortedCharts.length} charts
-                {filteredAndSortedCharts.length !== (charts?.length ?? 0) && 
+              <p
+                className="text-sm text-muted-foreground"
+                data-testid="text-showing-count"
+              >
+                Showing {visibleCharts.length} of{" "}
+                {filteredAndSortedCharts.length} charts
+                {filteredAndSortedCharts.length !== (charts?.length ?? 0) &&
                   ` (filtered from ${charts?.length ?? 0})`}
               </p>
               <div className="grid gap-3">
@@ -289,8 +326,8 @@ export default function Home() {
                 ))}
               </div>
               {hasMore && (
-                <div 
-                  ref={loadMoreRef} 
+                <div
+                  ref={loadMoreRef}
                   className="flex justify-center py-8"
                   data-testid="load-more-trigger"
                 >
