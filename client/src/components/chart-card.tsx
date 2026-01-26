@@ -131,7 +131,7 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
         </div>
 
         <div 
-          className={`flex items-center justify-center flex-shrink-0 ${difficultyColor} rounded-md px-4`}
+          className={`flex items-center justify-center flex-shrink-0 w-16 ${difficultyColor} rounded-md`}
           data-testid={`badge-difficulty-${chart.id}`}
         >
           <span className="text-3xl font-bold text-white">{chart.difficulty}</span>
