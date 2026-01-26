@@ -2,6 +2,11 @@ import { ChevronUp, ChevronDown, Music, Users, Trophy } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { ChartWithSong, VoteCount } from "@shared/schema";
 
 interface ChartCardProps {
@@ -98,16 +103,23 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
         </div>
 
         <div className="flex flex-col items-center gap-1 flex-shrink-0">
-          <Button
-            variant={userVote === "up" ? "default" : "ghost"}
-            size="icon"
-            onClick={() => onVote(chart.id, "up")}
-            disabled={isPending}
-            className={userVote === "up" ? "toggle-elevate toggle-elevated" : ""}
-            data-testid={`button-upvote-${chart.id}`}
-          >
-            <ChevronUp className="w-5 h-5" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={userVote === "up" ? "default" : "ghost"}
+                size="icon"
+                onClick={() => onVote(chart.id, "up")}
+                disabled={isPending}
+                className={userVote === "up" ? "toggle-elevate toggle-elevated" : ""}
+                data-testid={`button-upvote-${chart.id}`}
+              >
+                <ChevronUp className="w-5 h-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+              <p>Should be harder</p>
+            </TooltipContent>
+          </Tooltip>
           <span 
             className={`text-sm font-bold ${
               netVotes > 0 ? "text-emerald-600 dark:text-emerald-400" : 
@@ -118,16 +130,23 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
           >
             {netVotes > 0 ? "+" : ""}{netVotes}
           </span>
-          <Button
-            variant={userVote === "down" ? "destructive" : "ghost"}
-            size="icon"
-            onClick={() => onVote(chart.id, "down")}
-            disabled={isPending}
-            className={userVote === "down" ? "toggle-elevate toggle-elevated" : ""}
-            data-testid={`button-downvote-${chart.id}`}
-          >
-            <ChevronDown className="w-5 h-5" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={userVote === "down" ? "destructive" : "ghost"}
+                size="icon"
+                onClick={() => onVote(chart.id, "down")}
+                disabled={isPending}
+                className={userVote === "down" ? "toggle-elevate toggle-elevated" : ""}
+                data-testid={`button-downvote-${chart.id}`}
+              >
+                <ChevronDown className="w-5 h-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+              <p>Should be easier</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
     </Card>
