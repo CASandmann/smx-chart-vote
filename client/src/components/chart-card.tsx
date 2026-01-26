@@ -85,20 +85,34 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
             >
               {chart.difficulty_display}
             </Badge>
-            <span 
-              className="text-xs text-muted-foreground flex items-center gap-1"
-              data-testid={`text-plays-${chart.id}`}
-            >
-              <Users className="w-3 h-3" />
-              {chart.play_count.toLocaleString()}
-            </span>
-            <span 
-              className="text-xs text-muted-foreground flex items-center gap-1"
-              data-testid={`text-passes-${chart.id}`}
-            >
-              <Trophy className="w-3 h-3" />
-              {chart.pass_count.toLocaleString()}
-            </span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span 
+                  className="text-xs text-muted-foreground flex items-center gap-1 cursor-help"
+                  data-testid={`text-plays-${chart.id}`}
+                >
+                  <Users className="w-3 h-3" />
+                  {chart.play_count.toLocaleString()}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Total plays</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span 
+                  className="text-xs text-muted-foreground flex items-center gap-1 cursor-help"
+                  data-testid={`text-passes-${chart.id}`}
+                >
+                  <Trophy className="w-3 h-3" />
+                  {chart.pass_count.toLocaleString()}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Total passes</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
 
