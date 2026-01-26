@@ -47,24 +47,32 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
 
   const difficultyColor = difficultyColors[chart.difficulty_name] ?? "bg-gray-500 dark:bg-gray-600";
   
-  // Use official art from statmaniax
+  // Use official art from statmaniax, with smx.573.no fallback
   const statmaniaxFolder = toStatmaniaxFolder(chart.song.title);
-  const coverUrl = `https://data.stepmaniax.com/uploads/songs/${statmaniaxFolder}/cover@256x256.jpg`;
+  const statmaniaxUrl = `https://data.stepmaniax.com/uploads/songs/${statmaniaxFolder}/cover@256x256.jpg`;
+  const fallbackUrl = chart.song.cover_thumb 
+    ? `https://smx.573.no/${chart.song.cover_thumb}`
+    : null;
 
   return (
     <Card className="overflow-visible hover-elevate active-elevate-2 transition-all duration-200">
       <div className="flex gap-4 p-4">
         <div className="relative flex-shrink-0">
           <img
-            src={coverUrl}
+            src={statmaniaxUrl}
             alt={chart.song.title}
             className="w-20 h-20 rounded-md object-cover bg-muted"
             data-testid={`img-cover-${chart.id}`}
             onError={(e) => {
-              // Fallback to placeholder on error
               const target = e.target as HTMLImageElement;
-              target.style.display = 'none';
-              target.nextElementSibling?.classList.remove('hidden');
+              // Try fallback URL if available, otherwise show placeholder
+              if (fallbackUrl && !target.dataset.triedFallback) {
+                target.dataset.triedFallback = 'true';
+                target.src = fallbackUrl;
+              } else {
+                target.style.display = 'none';
+                target.nextElementSibling?.classList.remove('hidden');
+              }
             }}
           />
           <div className="w-20 h-20 rounded-md bg-muted flex items-center justify-center hidden">
