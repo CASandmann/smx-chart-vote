@@ -63,7 +63,7 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
             </div>
           )}
           <Badge 
-            className={`absolute -bottom-2 -right-2 ${difficultyColor} text-white border-0`}
+            className={`absolute inset-0 m-auto w-fit h-fit text-lg font-bold px-3 py-1 ${difficultyColor} text-white border-0`}
             data-testid={`badge-difficulty-${chart.id}`}
           >
             {chart.difficulty}
