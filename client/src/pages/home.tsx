@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { ChartCard } from "@/components/chart-card";
 import { ChartListSkeleton } from "@/components/chart-skeleton";
@@ -12,6 +12,8 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { ChartWithSong, VoteCount } from "@shared/schema";
 import { Music2 } from "lucide-react";
 
+const ITEMS_PER_PAGE = 100;
+
 export default function Home() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
@@ -19,6 +21,8 @@ export default function Home() {
   const [minDifficulty, setMinDifficulty] = useState(1);
   const [maxDifficulty, setMaxDifficulty] = useState(28);
   const [sortBy, setSortBy] = useState("votes");
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   const { data: charts, isLoading: chartsLoading, isError: chartsError } = useQuery<ChartWithSong[]>({
     queryKey: ["/api/charts"],
@@ -59,6 +63,11 @@ export default function Home() {
     setMinDifficulty(1);
     setMaxDifficulty(28);
   }, []);
+
+  // Reset visible count when filters change
+  useEffect(() => {
+    setVisibleCount(ITEMS_PER_PAGE);
+  }, [searchQuery, difficultyFilter, minDifficulty, maxDifficulty, sortBy]);
 
   const voteCountMap = useMemo(() => {
     const map = new Map<number, VoteCount>();
@@ -120,6 +129,36 @@ export default function Home() {
     return songIds.size;
   }, [charts]);
 
+  // Get visible charts (lazy loaded)
+  const visibleCharts = useMemo(() => {
+    return filteredAndSortedCharts.slice(0, visibleCount);
+  }, [filteredAndSortedCharts, visibleCount]);
+
+  const hasMore = visibleCount < filteredAndSortedCharts.length;
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setVisibleCount((prev) => Math.min(prev + ITEMS_PER_PAGE, filteredAndSortedCharts.length));
+        }
+      },
+      { threshold: 0.1, rootMargin: "100px" }
+    );
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [hasMore, filteredAndSortedCharts.length]);
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
@@ -170,11 +209,13 @@ export default function Home() {
             <EmptyState type="no-results" onClearFilters={clearAllFilters} />
           ) : (
             <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Showing {filteredAndSortedCharts.length} of {charts?.length ?? 0} charts
+              <p className="text-sm text-muted-foreground" data-testid="text-showing-count">
+                Showing {visibleCharts.length} of {filteredAndSortedCharts.length} charts
+                {filteredAndSortedCharts.length !== (charts?.length ?? 0) && 
+                  ` (filtered from ${charts?.length ?? 0})`}
               </p>
               <div className="grid gap-3">
-                {filteredAndSortedCharts.map((chart) => (
+                {visibleCharts.map((chart) => (
                   <ChartCard
                     key={chart.id}
                     chart={chart}
@@ -184,6 +225,18 @@ export default function Home() {
                   />
                 ))}
               </div>
+              {hasMore && (
+                <div 
+                  ref={loadMoreRef} 
+                  className="flex justify-center py-8"
+                  data-testid="load-more-trigger"
+                >
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    Loading more charts...
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
