@@ -21,7 +21,7 @@ export default function Home() {
   const { toast } = useToast();
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
-  const [difficultyFilter, setDifficultyFilter] = useState("all");
+  const [difficultyFilters, setDifficultyFilters] = useState<string[]>([]);
   const [minDifficulty, setMinDifficulty] = useState(1);
   const [maxDifficulty, setMaxDifficulty] = useState(28);
   const [sortBy, setSortBy] = useState("votes");
@@ -95,7 +95,7 @@ export default function Home() {
 
   const clearAllFilters = useCallback(() => {
     setSearchQuery("");
-    setDifficultyFilter("all");
+    setDifficultyFilters([]);
     setMinDifficulty(1);
     setMaxDifficulty(28);
   }, []);
@@ -103,7 +103,7 @@ export default function Home() {
   // Reset visible count when filters change
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE);
-  }, [searchQuery, difficultyFilter, minDifficulty, maxDifficulty, sortBy]);
+  }, [searchQuery, difficultyFilters, minDifficulty, maxDifficulty, sortBy]);
 
   const voteCountMap = useMemo(() => {
     const map = new Map<number, VoteCount>();
@@ -122,8 +122,8 @@ export default function Home() {
         chart.song.artist.toLowerCase().includes(query);
 
       const matchesDifficultyType =
-        difficultyFilter === "all" ||
-        chart.difficulty_name === difficultyFilter;
+        difficultyFilters.length === 0 ||
+        difficultyFilters.includes(chart.difficulty_name);
 
       const matchesDifficultyRange =
         chart.difficulty >= minDifficulty && chart.difficulty <= maxDifficulty;
@@ -168,7 +168,7 @@ export default function Home() {
   }, [
     charts,
     searchQuery,
-    difficultyFilter,
+    difficultyFilters,
     minDifficulty,
     maxDifficulty,
     sortBy,
@@ -287,8 +287,8 @@ export default function Home() {
         <SearchFilter
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          difficultyFilter={difficultyFilter}
-          onDifficultyFilterChange={setDifficultyFilter}
+          difficultyFilters={difficultyFilters}
+          onDifficultyFiltersChange={setDifficultyFilters}
           minDifficulty={minDifficulty}
           maxDifficulty={maxDifficulty}
           onDifficultyRangeChange={handleDifficultyRangeChange}

@@ -2,6 +2,7 @@ import { Search, SlidersHorizontal, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -20,8 +21,8 @@ import { Slider } from "@/components/ui/slider";
 interface SearchFilterProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
-  difficultyFilter: string;
-  onDifficultyFilterChange: (value: string) => void;
+  difficultyFilters: string[];
+  onDifficultyFiltersChange: (value: string[]) => void;
   minDifficulty: number;
   maxDifficulty: number;
   onDifficultyRangeChange: (min: number, max: number) => void;
@@ -30,7 +31,6 @@ interface SearchFilterProps {
 }
 
 const difficultyTypes = [
-  { value: "all", label: "All Difficulties" },
   { value: "basic", label: "Basic" },
   { value: "easy", label: "Easy" },
   { value: "easy2", label: "Easy+" },
@@ -46,15 +46,27 @@ const difficultyTypes = [
 export function SearchFilter({
   searchQuery,
   onSearchChange,
-  difficultyFilter,
-  onDifficultyFilterChange,
+  difficultyFilters,
+  onDifficultyFiltersChange,
   minDifficulty,
   maxDifficulty,
   onDifficultyRangeChange,
   sortBy,
   onSortChange,
 }: SearchFilterProps) {
-  const hasActiveFilters = difficultyFilter !== "all" || minDifficulty > 1 || maxDifficulty < 28;
+  const hasActiveFilters = difficultyFilters.length > 0 || minDifficulty > 1 || maxDifficulty < 28;
+
+  const toggleDifficultyFilter = (value: string) => {
+    if (difficultyFilters.includes(value)) {
+      onDifficultyFiltersChange(difficultyFilters.filter(f => f !== value));
+    } else {
+      onDifficultyFiltersChange([...difficultyFilters, value]);
+    }
+  };
+
+  const removeDifficultyFilter = (value: string) => {
+    onDifficultyFiltersChange(difficultyFilters.filter(f => f !== value));
+  };
 
   return (
     <div className="space-y-4">
@@ -100,20 +112,26 @@ export function SearchFilter({
             </PopoverTrigger>
             <PopoverContent className="w-80" align="end">
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Difficulty Type</Label>
-                  <Select value={difficultyFilter} onValueChange={onDifficultyFilterChange}>
-                    <SelectTrigger data-testid="select-difficulty-type">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {difficultyTypes.map((dt) => (
-                        <SelectItem key={dt.value} value={dt.value}>
+                <div className="space-y-3">
+                  <Label>Difficulty Types</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {difficultyTypes.map((dt) => (
+                      <div key={dt.value} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`filter-${dt.value}`}
+                          checked={difficultyFilters.includes(dt.value)}
+                          onCheckedChange={() => toggleDifficultyFilter(dt.value)}
+                          data-testid={`checkbox-difficulty-${dt.value}`}
+                        />
+                        <label
+                          htmlFor={`filter-${dt.value}`}
+                          className="text-sm cursor-pointer"
+                        >
                           {dt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
@@ -135,7 +153,7 @@ export function SearchFilter({
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                      onDifficultyFilterChange("all");
+                      onDifficultyFiltersChange([]);
                       onDifficultyRangeChange(1, 28);
                     }}
                     className="w-full"
@@ -153,22 +171,23 @@ export function SearchFilter({
 
       {hasActiveFilters && (
         <div className="flex flex-wrap gap-2">
-          {difficultyFilter !== "all" && (
+          {difficultyFilters.map((filter) => (
             <Badge 
+              key={filter}
               variant="secondary" 
               className="gap-1"
-              data-testid="badge-difficulty-type-filter"
+              data-testid={`badge-filter-${filter}`}
             >
-              {difficultyTypes.find(d => d.value === difficultyFilter)?.label}
+              {difficultyTypes.find(d => d.value === filter)?.label}
               <button 
-                onClick={() => onDifficultyFilterChange("all")}
+                onClick={() => removeDifficultyFilter(filter)}
                 className="ml-1"
-                data-testid="button-remove-difficulty-filter"
+                data-testid={`button-remove-filter-${filter}`}
               >
                 <X className="w-3 h-3" />
               </button>
             </Badge>
-          )}
+          ))}
           {(minDifficulty > 1 || maxDifficulty < 28) && (
             <Badge 
               variant="secondary" 
