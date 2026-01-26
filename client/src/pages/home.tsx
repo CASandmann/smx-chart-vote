@@ -100,7 +100,8 @@ export default function Home() {
           const bVotes = voteCountMap.get(b.id);
           const aNet = (aVotes?.upvotes ?? 0) - (aVotes?.downvotes ?? 0);
           const bNet = (bVotes?.upvotes ?? 0) - (bVotes?.downvotes ?? 0);
-          return bNet - aNet;
+          // Sort by absolute value - negative votes are still votes
+          return Math.abs(bNet) - Math.abs(aNet);
         }
         case "difficulty-asc":
           return a.difficulty - b.difficulty;
