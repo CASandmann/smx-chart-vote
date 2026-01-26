@@ -6,16 +6,20 @@ import { SearchFilter } from "@/components/search-filter";
 import { StatsHeader } from "@/components/stats-header";
 import { EmptyState } from "@/components/empty-state";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { isUnauthorizedError } from "@/lib/auth-utils";
 import type { ChartWithSong, VoteCount } from "@shared/schema";
-import { Music2 } from "lucide-react";
+import { Music2, LogIn, LogOut } from "lucide-react";
 
 const ITEMS_PER_PAGE = 100;
 
 export default function Home() {
   const { toast } = useToast();
+  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("all");
   const [minDifficulty, setMinDifficulty] = useState(1);
@@ -39,7 +43,15 @@ export default function Home() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/votes"] });
     },
-    onError: () => {
+    onError: (error: Error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Login Required",
+          description: "Please log in to vote on charts.",
+          variant: "destructive",
+        });
+        return;
+      }
       toast({
         title: "Vote Failed",
         description: "Unable to record your vote. Please try again.",
@@ -49,8 +61,16 @@ export default function Home() {
   });
 
   const handleVote = useCallback((chartId: number, voteType: "up" | "down") => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to vote on charts.",
+        variant: "destructive",
+      });
+      return;
+    }
     voteMutation.mutate({ chartId, voteType });
-  }, [voteMutation]);
+  }, [voteMutation, isAuthenticated, toast]);
 
   const handleDifficultyRangeChange = useCallback((min: number, max: number) => {
     setMinDifficulty(min);
@@ -176,7 +196,39 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              {authLoading ? (
+                <div className="w-8 h-8 rounded-full bg-muted animate-pulse" />
+              ) : isAuthenticated && user ? (
+                <div className="flex items-center gap-2">
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={user.profileImageUrl || undefined} alt={user.firstName || "User"} />
+                    <AvatarFallback>
+                      {user.firstName?.[0] || user.email?.[0] || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm hidden sm:inline">{user.firstName || user.email}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    asChild
+                    data-testid="button-logout"
+                  >
+                    <a href="/api/logout">
+                      <LogOut className="w-4 h-4" />
+                    </a>
+                  </Button>
+                </div>
+              ) : (
+                <Button asChild data-testid="button-login">
+                  <a href="/api/login" className="flex items-center gap-2">
+                    <LogIn className="w-4 h-4" />
+                    <span>Log In</span>
+                  </a>
+                </Button>
+              )}
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </header>
