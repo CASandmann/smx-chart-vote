@@ -1,4 +1,4 @@
-import { ChevronUp, ChevronDown, Music, Users, Trophy } from "lucide-react";
+import { ChevronUp, ChevronDown, Music, Users, Trophy, Percent } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,10 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
   const downvotes = voteData?.downvotes ?? 0;
   const userVote = voteData?.userVote ?? null;
   const netVotes = upvotes - downvotes;
+  
+  const passPercentage = chart.play_count > 0 
+    ? Math.round((chart.pass_count / chart.play_count) * 100) 
+    : 0;
 
   const difficultyColor = difficultyColors[chart.difficulty_name] ?? "bg-gray-500 dark:bg-gray-600";
   
@@ -113,6 +117,20 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
               </TooltipTrigger>
               <TooltipContent>
                 <p>Total passes</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span 
+                  className="text-xs text-muted-foreground flex items-center gap-1 cursor-help"
+                  data-testid={`text-pass-rate-${chart.id}`}
+                >
+                  <Percent className="w-3 h-3" />
+                  {passPercentage}%
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Pass rate</p>
               </TooltipContent>
             </Tooltip>
           </div>
