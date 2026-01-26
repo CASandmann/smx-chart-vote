@@ -1,4 +1,11 @@
-import { ChevronUp, ChevronDown, Music, Users, Trophy, Percent } from "lucide-react";
+import {
+  ChevronUp,
+  ChevronDown,
+  Music,
+  Users,
+  Trophy,
+  Percent,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,32 +24,39 @@ interface ChartCardProps {
 }
 
 const difficultyColors: Record<string, string> = {
-  basic: "bg-green-400 dark:bg-green-500",      // Beginner - green (lighter)
-  easy: "bg-yellow-400 dark:bg-yellow-500",     // Easy - yellow (lighter)
-  easy2: "bg-yellow-400 dark:bg-yellow-500",    // Easy+ - same yellow
-  hard: "bg-red-500 dark:bg-red-600",           // Hard - more vivid red
-  hard2: "bg-red-500 dark:bg-red-600",          // Hard+ - same red
-  wild: "bg-purple-500 dark:bg-purple-600",     // Wild - purple (unchanged)
-  full: "bg-teal-400 dark:bg-teal-500",         // Full - green-turquoise
-  full2: "bg-teal-400 dark:bg-teal-500",        // Full+ - same turquoise
-  dual: "bg-blue-400 dark:bg-blue-500",         // Dual - blue (lighter)
-  dual2: "bg-blue-400 dark:bg-blue-500",        // Dual+ - same blue
+  basic: "bg-green-400 dark:bg-green-500", // Beginner - green (lighter)
+  easy: "bg-yellow-400 dark:bg-yellow-500", // Easy - yellow (lighter)
+  easy2: "bg-yellow-400 dark:bg-yellow-500", // Easy+ - same yellow
+  hard: "bg-red-500 dark:bg-red-600", // Hard - more vivid red
+  hard2: "bg-red-500 dark:bg-red-600", // Hard+ - same red
+  wild: "bg-purple-500 dark:bg-purple-600", // Wild - purple (unchanged)
+  full: "bg-teal-400 dark:bg-teal-500", // Full - green-turquoise
+  full2: "bg-teal-400 dark:bg-teal-500", // Full+ - same turquoise
+  dual: "bg-blue-400 dark:bg-blue-500", // Dual - blue (lighter)
+  dual2: "bg-blue-400 dark:bg-blue-500", // Dual+ - same blue
 };
 
-export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps) {
+export function ChartCard({
+  chart,
+  voteData,
+  onVote,
+  isPending,
+}: ChartCardProps) {
   const upvotes = voteData?.upvotes ?? 0;
   const downvotes = voteData?.downvotes ?? 0;
   const userVote = voteData?.userVote ?? null;
   const netVotes = upvotes - downvotes;
-  
-  const passPercentage = chart.play_count > 0 
-    ? Math.round((chart.pass_count / chart.play_count) * 100) 
-    : 0;
 
-  const difficultyColor = difficultyColors[chart.difficulty_name] ?? "bg-gray-500 dark:bg-gray-600";
-  
+  const passPercentage =
+    chart.play_count > 0
+      ? Math.round((chart.pass_count / chart.play_count) * 100)
+      : 0;
+
+  const difficultyColor =
+    difficultyColors[chart.difficulty_name] ?? "bg-gray-500 dark:bg-gray-600";
+
   // Cover images are hosted on data.stepmaniax.com
-  const coverUrl = chart.song.cover_thumb 
+  const coverUrl = chart.song.cover_thumb
     ? `https://data.stepmaniax.com/${chart.song.cover_thumb}`
     : null;
 
@@ -63,23 +77,23 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
             </div>
           )}
         </div>
-        
+
         <div className="flex-1 min-w-0">
-          <h3 
+          <h3
             className="font-semibold text-base truncate"
             data-testid={`text-title-${chart.id}`}
           >
             {chart.song.title}
           </h3>
-          <p 
+          <p
             className="text-sm text-muted-foreground truncate"
             data-testid={`text-artist-${chart.id}`}
           >
             {chart.song.artist}
           </p>
           <div className="flex flex-wrap items-center gap-2 mt-2">
-            <Badge 
-              variant="outline" 
+            <Badge
+              variant="outline"
               className="text-xs capitalize"
               data-testid={`badge-difficulty-name-${chart.id}`}
             >
@@ -87,7 +101,7 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
             </Badge>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span 
+                <span
                   className="text-xs text-muted-foreground flex items-center gap-1 cursor-help"
                   data-testid={`text-plays-${chart.id}`}
                 >
@@ -101,7 +115,7 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span 
+                <span
                   className="text-xs text-muted-foreground flex items-center gap-1 cursor-help"
                   data-testid={`text-passes-${chart.id}`}
                 >
@@ -115,7 +129,7 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span 
+                <span
                   className="text-xs text-muted-foreground flex items-center gap-1 cursor-help"
                   data-testid={`text-pass-rate-${chart.id}`}
                 >
@@ -130,11 +144,13 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
           </div>
         </div>
 
-        <div 
+        <div
           className={`flex items-center justify-center flex-shrink-0 w-16 ${difficultyColor} rounded-md`}
           data-testid={`badge-difficulty-${chart.id}`}
         >
-          <span className="text-3xl font-bold text-white">{chart.difficulty}</span>
+          <span className="text-3xl font-bold text-white">
+            {chart.difficulty}
+          </span>
         </div>
 
         <div className="flex flex-col items-center justify-center gap-0 flex-shrink-0 h-20">
@@ -152,18 +168,21 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
-              <p>Should be harder</p>
+              <p>Should be rated higher</p>
             </TooltipContent>
           </Tooltip>
-          <span 
+          <span
             className={`text-sm font-bold ${
-              netVotes > 0 ? "text-emerald-600 dark:text-emerald-400" : 
-              netVotes < 0 ? "text-rose-600 dark:text-rose-400" : 
-              "text-muted-foreground"
+              netVotes > 0
+                ? "text-emerald-600 dark:text-emerald-400"
+                : netVotes < 0
+                  ? "text-rose-600 dark:text-rose-400"
+                  : "text-muted-foreground"
             }`}
             data-testid={`text-votes-${chart.id}`}
           >
-            {netVotes > 0 ? "+" : ""}{netVotes}
+            {netVotes > 0 ? "+" : ""}
+            {netVotes}
           </span>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -179,7 +198,7 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
-              <p>Should be easier</p>
+              <p>Should be rated lower</p>
             </TooltipContent>
           </Tooltip>
         </div>
