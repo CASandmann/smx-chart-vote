@@ -37,9 +37,9 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
 
   const difficultyColor = difficultyColors[chart.difficulty_name] ?? "bg-gray-500 dark:bg-gray-600";
   
-  // Use smx.573.no cover images (the song IDs from smx.573.no don't match statmaniax IDs)
+  // Cover images are hosted on data.stepmaniax.com
   const coverUrl = chart.song.cover_thumb 
-    ? `https://smx.573.no/${chart.song.cover_thumb}`
+    ? `https://data.stepmaniax.com/${chart.song.cover_thumb}`
     : null;
 
   return (
