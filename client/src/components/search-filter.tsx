@@ -81,7 +81,8 @@ export function SearchFilter({
               <SelectItem value="difficulty-asc">Difficulty (Low)</SelectItem>
               <SelectItem value="difficulty-desc">Difficulty (High)</SelectItem>
               <SelectItem value="plays">Most Played</SelectItem>
-              <SelectItem value="pass-rate">Pass Rate</SelectItem>
+              <SelectItem value="pass-rate-desc">Pass Rate (High)</SelectItem>
+              <SelectItem value="pass-rate-asc">Pass Rate (Low)</SelectItem>
               <SelectItem value="title">Title A-Z</SelectItem>
             </SelectContent>
           </Select>

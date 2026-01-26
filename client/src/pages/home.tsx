@@ -129,10 +129,15 @@ export default function Home() {
           return b.difficulty - a.difficulty;
         case "plays":
           return b.play_count - a.play_count;
-        case "pass-rate": {
+        case "pass-rate-desc": {
           const aRate = a.play_count > 0 ? a.pass_count / a.play_count : 0;
           const bRate = b.play_count > 0 ? b.pass_count / b.play_count : 0;
           return bRate - aRate;
+        }
+        case "pass-rate-asc": {
+          const aRate = a.play_count > 0 ? a.pass_count / a.play_count : 0;
+          const bRate = b.play_count > 0 ? b.pass_count / b.play_count : 0;
+          return aRate - bRate;
         }
         case "title":
           return a.song.title.localeCompare(b.song.title);
