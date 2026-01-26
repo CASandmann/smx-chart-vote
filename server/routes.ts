@@ -13,6 +13,40 @@ let cachedCharts: ChartWithSong[] | null = null;
 let cacheTimestamp: number = 0;
 const CACHE_DURATION = 5 * 60 * 1000;
 
+// Cache for song image URLs from statmaniax
+const songImageCache = new Map<number, string>();
+
+async function fetchSongImageUrl(songId: number): Promise<string | null> {
+  // Check cache first
+  if (songImageCache.has(songId)) {
+    return songImageCache.get(songId)!;
+  }
+
+  try {
+    const response = await fetch(`https://statmaniax.com/song/${songId}`);
+    if (!response.ok) {
+      return null;
+    }
+
+    const html = await response.text();
+    
+    // Extract the image URL from the HTML
+    // Looking for pattern like: <img src="https://data.stepmaniax.com/uploads/songs/SongFolder/cover.png"
+    const imgMatch = html.match(/https:\/\/data\.stepmaniax\.com\/uploads\/songs\/[^"]+\/cover(?:@\d+x\d+)?\.(?:png|jpg)/i);
+    
+    if (imgMatch) {
+      const imageUrl = imgMatch[0];
+      songImageCache.set(songId, imageUrl);
+      return imageUrl;
+    }
+
+    return null;
+  } catch (error) {
+    console.error(`Error fetching statmaniax page for song ${songId}:`, error);
+    return null;
+  }
+}
+
 async function fetchChartsWithSongs(): Promise<ChartWithSong[]> {
   const now = Date.now();
   if (cachedCharts && (now - cacheTimestamp) < CACHE_DURATION) {
@@ -85,6 +119,27 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching votes:", error);
       res.status(500).json({ error: "Failed to fetch votes" });
+    }
+  });
+
+  // Endpoint to get the correct image URL for a song
+  app.get("/api/song-image/:songId", async (req, res) => {
+    try {
+      const songId = parseInt(req.params.songId, 10);
+      if (isNaN(songId)) {
+        return res.status(400).json({ error: "Invalid song ID" });
+      }
+
+      const imageUrl = await fetchSongImageUrl(songId);
+      
+      if (imageUrl) {
+        res.json({ imageUrl });
+      } else {
+        res.status(404).json({ error: "Image not found" });
+      }
+    } catch (error) {
+      console.error("Error fetching song image:", error);
+      res.status(500).json({ error: "Failed to fetch song image" });
     }
   });
 

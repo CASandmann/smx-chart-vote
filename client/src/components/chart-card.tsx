@@ -16,16 +16,6 @@ interface ChartCardProps {
   isPending: boolean;
 }
 
-// Convert song title to statmaniax folder name format
-function toStatmaniaxFolder(title: string): string {
-  // Remove spaces and special characters except apostrophes
-  return title
-    .replace(/[^\w\s']/g, '') // Remove special chars except apostrophe
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join('');
-}
-
 const difficultyColors: Record<string, string> = {
   basic: "bg-green-400 dark:bg-green-500",      // Beginner - green (lighter)
   easy: "bg-yellow-400 dark:bg-yellow-500",     // Easy - yellow (lighter)
@@ -47,10 +37,8 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
 
   const difficultyColor = difficultyColors[chart.difficulty_name] ?? "bg-gray-500 dark:bg-gray-600";
   
-  // Use official art from statmaniax, with smx.573.no fallback
-  const statmaniaxFolder = toStatmaniaxFolder(chart.song.title);
-  const statmaniaxUrl = `https://data.stepmaniax.com/uploads/songs/${statmaniaxFolder}/cover@256x256.jpg`;
-  const fallbackUrl = chart.song.cover_thumb 
+  // Use smx.573.no cover images (the song IDs from smx.573.no don't match statmaniax IDs)
+  const coverUrl = chart.song.cover_thumb 
     ? `https://smx.573.no/${chart.song.cover_thumb}`
     : null;
 
@@ -58,26 +46,18 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
     <Card className="overflow-visible hover-elevate active-elevate-2 transition-all duration-200">
       <div className="flex gap-4 p-4">
         <div className="relative flex-shrink-0">
-          <img
-            src={statmaniaxUrl}
-            alt={chart.song.title}
-            className="w-20 h-20 rounded-md object-cover bg-muted"
-            data-testid={`img-cover-${chart.id}`}
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              // Try fallback URL if available, otherwise show placeholder
-              if (fallbackUrl && !target.dataset.triedFallback) {
-                target.dataset.triedFallback = 'true';
-                target.src = fallbackUrl;
-              } else {
-                target.style.display = 'none';
-                target.nextElementSibling?.classList.remove('hidden');
-              }
-            }}
-          />
-          <div className="w-20 h-20 rounded-md bg-muted flex items-center justify-center hidden">
-            <Music className="w-8 h-8 text-muted-foreground" />
-          </div>
+          {coverUrl ? (
+            <img
+              src={coverUrl}
+              alt={chart.song.title}
+              className="w-20 h-20 rounded-md object-cover bg-muted"
+              data-testid={`img-cover-${chart.id}`}
+            />
+          ) : (
+            <div className="w-20 h-20 rounded-md bg-muted flex items-center justify-center">
+              <Music className="w-8 h-8 text-muted-foreground" />
+            </div>
+          )}
           <Badge 
             className={`absolute -bottom-2 -right-2 ${difficultyColor} text-white border-0`}
             data-testid={`badge-difficulty-${chart.id}`}
