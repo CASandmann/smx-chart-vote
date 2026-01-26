@@ -48,7 +48,7 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
 
   return (
     <Card className="overflow-visible hover-elevate active-elevate-2 transition-all duration-200">
-      <div className="flex gap-4 p-4">
+      <div className="flex gap-4 p-4 items-center">
         <div className="relative flex-shrink-0">
           {coverUrl ? (
             <img
@@ -137,18 +137,18 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
           <span className="text-3xl font-bold text-white">{chart.difficulty}</span>
         </div>
 
-        <div className="flex flex-col items-center gap-1 flex-shrink-0">
+        <div className="flex flex-col items-center justify-center gap-0 flex-shrink-0 h-20">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant={userVote === "up" ? "default" : "ghost"}
-                size="icon"
+                size="sm"
                 onClick={() => onVote(chart.id, "up")}
                 disabled={isPending}
-                className={userVote === "up" ? "toggle-elevate toggle-elevated" : ""}
+                className={`h-6 w-6 p-0 ${userVote === "up" ? "toggle-elevate toggle-elevated" : ""}`}
                 data-testid={`button-upvote-${chart.id}`}
               >
-                <ChevronUp className="w-5 h-5" />
+                <ChevronUp className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
@@ -169,13 +169,13 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
             <TooltipTrigger asChild>
               <Button
                 variant={userVote === "down" ? "destructive" : "ghost"}
-                size="icon"
+                size="sm"
                 onClick={() => onVote(chart.id, "down")}
                 disabled={isPending}
-                className={userVote === "down" ? "toggle-elevate toggle-elevated" : ""}
+                className={`h-6 w-6 p-0 ${userVote === "down" ? "toggle-elevate toggle-elevated" : ""}`}
                 data-testid={`button-downvote-${chart.id}`}
               >
-                <ChevronDown className="w-5 h-5" />
+                <ChevronDown className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
