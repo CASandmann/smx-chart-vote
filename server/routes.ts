@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { isAuthenticated } from "./replit_integrations/auth";
 import { z } from "zod";
 import type { Chart, Song, ChartWithSong } from "@shared/schema";
 
@@ -12,40 +13,6 @@ const voteSchema = z.object({
 let cachedCharts: ChartWithSong[] | null = null;
 let cacheTimestamp: number = 0;
 const CACHE_DURATION = 5 * 60 * 1000;
-
-// Cache for song image URLs from statmaniax
-const songImageCache = new Map<number, string>();
-
-async function fetchSongImageUrl(songId: number): Promise<string | null> {
-  // Check cache first
-  if (songImageCache.has(songId)) {
-    return songImageCache.get(songId)!;
-  }
-
-  try {
-    const response = await fetch(`https://statmaniax.com/song/${songId}`);
-    if (!response.ok) {
-      return null;
-    }
-
-    const html = await response.text();
-    
-    // Extract the image URL from the HTML
-    // Looking for pattern like: <img src="https://data.stepmaniax.com/uploads/songs/SongFolder/cover.png"
-    const imgMatch = html.match(/https:\/\/data\.stepmaniax\.com\/uploads\/songs\/[^"]+\/cover(?:@\d+x\d+)?\.(?:png|jpg)/i);
-    
-    if (imgMatch) {
-      const imageUrl = imgMatch[0];
-      songImageCache.set(songId, imageUrl);
-      return imageUrl;
-    }
-
-    return null;
-  } catch (error) {
-    console.error(`Error fetching statmaniax page for song ${songId}:`, error);
-    return null;
-  }
-}
 
 async function fetchChartsWithSongs(): Promise<ChartWithSong[]> {
   const now = Date.now();
@@ -90,11 +57,8 @@ async function fetchChartsWithSongs(): Promise<ChartWithSong[]> {
   }
 }
 
-function getSessionId(req: any): string {
-  if (!req.session.visitorId) {
-    req.session.visitorId = Math.random().toString(36).substring(2) + Date.now().toString(36);
-  }
-  return req.session.visitorId;
+function getUserId(req: any): string | null {
+  return req.user?.claims?.sub ?? null;
 }
 
 export async function registerRoutes(
@@ -113,8 +77,8 @@ export async function registerRoutes(
 
   app.get("/api/votes", async (req, res) => {
     try {
-      const sessionId = getSessionId(req);
-      const voteCounts = await storage.getVoteCounts(sessionId);
+      const userId = getUserId(req);
+      const voteCounts = await storage.getVoteCounts(userId || "");
       res.json(voteCounts);
     } catch (error) {
       console.error("Error fetching votes:", error);
@@ -122,42 +86,25 @@ export async function registerRoutes(
     }
   });
 
-  // Endpoint to get the correct image URL for a song
-  app.get("/api/song-image/:songId", async (req, res) => {
+  app.post("/api/votes", isAuthenticated, async (req: any, res) => {
     try {
-      const songId = parseInt(req.params.songId, 10);
-      if (isNaN(songId)) {
-        return res.status(400).json({ error: "Invalid song ID" });
+      const userId = getUserId(req);
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
       }
 
-      const imageUrl = await fetchSongImageUrl(songId);
-      
-      if (imageUrl) {
-        res.json({ imageUrl });
-      } else {
-        res.status(404).json({ error: "Image not found" });
-      }
-    } catch (error) {
-      console.error("Error fetching song image:", error);
-      res.status(500).json({ error: "Failed to fetch song image" });
-    }
-  });
-
-  app.post("/api/votes", async (req, res) => {
-    try {
-      const sessionId = getSessionId(req);
       const parsed = voteSchema.safeParse(req.body);
-      
+
       if (!parsed.success) {
         return res.status(400).json({ error: "Invalid vote data" });
       }
 
       const { chartId, voteType } = parsed.data;
-      
+
       const vote = await storage.createOrUpdateVote({
         chartId,
         voteType,
-        sessionId,
+        userId,
       });
 
       res.json(vote);

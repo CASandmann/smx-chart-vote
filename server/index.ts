@@ -1,6 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
-import session from "express-session";
-import MemoryStore from "memorystore";
+import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -8,34 +7,11 @@ import { createServer } from "http";
 const app = express();
 const httpServer = createServer(app);
 
-const MemoryStoreSession = MemoryStore(session);
-
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;
   }
 }
-
-declare module "express-session" {
-  interface SessionData {
-    visitorId: string;
-  }
-}
-
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "smx-chart-voter-secret",
-    resave: false,
-    saveUninitialized: true,
-    store: new MemoryStoreSession({
-      checkPeriod: 86400000,
-    }),
-    cookie: {
-      secure: false,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    },
-  })
-);
 
 app.use(
   express.json({
@@ -85,6 +61,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  await setupAuth(app);
+  registerAuthRoutes(app);
+  
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
