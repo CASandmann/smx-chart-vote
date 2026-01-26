@@ -15,11 +15,11 @@ const difficultyColors: Record<string, string> = {
   basic: "bg-green-400 dark:bg-green-500",      // Beginner - green (lighter)
   easy: "bg-yellow-400 dark:bg-yellow-500",     // Easy - yellow (lighter)
   easy2: "bg-yellow-400 dark:bg-yellow-500",    // Easy+ - same yellow
-  hard: "bg-red-400 dark:bg-red-500",           // Hard - red (lighter)
-  hard2: "bg-red-400 dark:bg-red-500",          // Hard+ - same red
+  hard: "bg-red-500 dark:bg-red-600",           // Hard - more vivid red
+  hard2: "bg-red-500 dark:bg-red-600",          // Hard+ - same red
   wild: "bg-purple-500 dark:bg-purple-600",     // Wild - purple (unchanged)
-  full: "bg-cyan-400 dark:bg-cyan-500",         // Full - turquoise (lighter)
-  full2: "bg-cyan-400 dark:bg-cyan-500",        // Full+ - same turquoise
+  full: "bg-teal-400 dark:bg-teal-500",         // Full - green-turquoise
+  full2: "bg-teal-400 dark:bg-teal-500",        // Full+ - same turquoise
   dual: "bg-blue-400 dark:bg-blue-500",         // Dual - blue (lighter)
   dual2: "bg-blue-400 dark:bg-blue-500",        // Dual+ - same blue
 };
