@@ -62,12 +62,6 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
               <Music className="w-8 h-8 text-muted-foreground" />
             </div>
           )}
-          <Badge 
-            className={`absolute inset-0 m-auto w-fit h-fit text-lg font-bold px-3 py-1 ${difficultyColor} text-white border-0`}
-            data-testid={`badge-difficulty-${chart.id}`}
-          >
-            {chart.difficulty}
-          </Badge>
         </div>
         
         <div className="flex-1 min-w-0">
@@ -134,6 +128,13 @@ export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps
               </TooltipContent>
             </Tooltip>
           </div>
+        </div>
+
+        <div 
+          className={`flex items-center justify-center flex-shrink-0 ${difficultyColor} rounded-md px-4`}
+          data-testid={`badge-difficulty-${chart.id}`}
+        >
+          <span className="text-3xl font-bold text-white">{chart.difficulty}</span>
         </div>
 
         <div className="flex flex-col items-center gap-1 flex-shrink-0">
