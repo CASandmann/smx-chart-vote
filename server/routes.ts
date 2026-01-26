@@ -38,8 +38,22 @@ async function fetchChartsWithSongs(): Promise<ChartWithSong[]> {
       songMap.set(song.id, song);
     }
 
+    // Songs permanently removed from the game
+    const removedSongs = new Set([
+      "All It Takes",
+      "Sinxorder",
+      "Hurry Up!",
+      "ChicaBomb",
+    ]);
+
     const chartsWithSongs: ChartWithSong[] = charts
-      .filter((chart) => songMap.has(chart.song_id))
+      .filter((chart) => {
+        const song = songMap.get(chart.song_id);
+        if (!song) return false;
+        // Exclude removed songs
+        if (removedSongs.has(song.title)) return false;
+        return true;
+      })
       .map((chart) => ({
         ...chart,
         song: songMap.get(chart.song_id)!,
