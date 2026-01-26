@@ -12,16 +12,16 @@ interface ChartCardProps {
 }
 
 const difficultyColors: Record<string, string> = {
-  basic: "bg-emerald-500 dark:bg-emerald-600",
-  easy: "bg-blue-500 dark:bg-blue-600",
-  easy2: "bg-blue-400 dark:bg-blue-500",
-  hard: "bg-amber-500 dark:bg-amber-600",
-  hard2: "bg-orange-500 dark:bg-orange-600",
-  wild: "bg-rose-500 dark:bg-rose-600",
-  full: "bg-purple-500 dark:bg-purple-600",
-  full2: "bg-fuchsia-500 dark:bg-fuchsia-600",
-  dual: "bg-cyan-500 dark:bg-cyan-600",
-  dual2: "bg-teal-500 dark:bg-teal-600",
+  basic: "bg-green-500 dark:bg-green-600",      // Beginner - green
+  easy: "bg-yellow-500 dark:bg-yellow-600",     // Easy - yellow
+  easy2: "bg-yellow-400 dark:bg-yellow-500",
+  hard: "bg-red-500 dark:bg-red-600",           // Hard - red
+  hard2: "bg-red-400 dark:bg-red-500",
+  wild: "bg-purple-500 dark:bg-purple-600",     // Wild - purple
+  full: "bg-teal-400 dark:bg-teal-500",         // Full - seafoam green
+  full2: "bg-teal-300 dark:bg-teal-400",
+  dual: "bg-blue-500 dark:bg-blue-600",         // Dual - blue
+  dual2: "bg-blue-400 dark:bg-blue-500",
 };
 
 export function ChartCard({ chart, voteData, onVote, isPending }: ChartCardProps) {
