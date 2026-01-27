@@ -18,6 +18,13 @@ export function StatsHeader({
 }: StatsHeaderProps) {
   const stats = [
     {
+      label: "Votes Cast",
+      value: totalVotes,
+      icon: ThumbsUp,
+      color: "text-accent",
+      bgColor: "bg-accent/10",
+    },
+    {
       label: "Total Charts",
       value: totalCharts,
       icon: BarChart3,
@@ -30,13 +37,6 @@ export function StatsHeader({
       icon: Music,
       color: "text-secondary",
       bgColor: "bg-secondary/10",
-    },
-    {
-      label: "Votes Cast",
-      value: totalVotes,
-      icon: ThumbsUp,
-      color: "text-accent",
-      bgColor: "bg-accent/10",
     },
   ];
 

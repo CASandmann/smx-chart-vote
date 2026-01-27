@@ -43,6 +43,19 @@ const difficultyTypes = [
   { value: "dual2", label: "Dual+" },
 ];
 
+const difficultyColors: Record<string, string> = {
+  basic: "bg-green-400 dark:bg-green-500 text-white",
+  easy: "bg-yellow-400 dark:bg-yellow-500 text-black",
+  easy2: "bg-yellow-400 dark:bg-yellow-500 text-black",
+  hard: "bg-red-500 dark:bg-red-600 text-white",
+  hard2: "bg-red-500 dark:bg-red-600 text-white",
+  wild: "bg-purple-500 dark:bg-purple-600 text-white",
+  full: "bg-teal-400 dark:bg-teal-500 text-white",
+  full2: "bg-teal-400 dark:bg-teal-500 text-white",
+  dual: "bg-blue-400 dark:bg-blue-500 text-white",
+  dual2: "bg-blue-400 dark:bg-blue-500 text-white",
+};
+
 export function SearchFilter({
   searchQuery,
   onSearchChange,
@@ -175,7 +188,7 @@ export function SearchFilter({
             <Badge 
               key={filter}
               variant="secondary" 
-              className="gap-1"
+              className={`gap-1 ${difficultyColors[filter] || ""}`}
               data-testid={`badge-filter-${filter}`}
             >
               {difficultyTypes.find(d => d.value === filter)?.label}
@@ -190,8 +203,8 @@ export function SearchFilter({
           ))}
           {(minDifficulty > 1 || maxDifficulty < 28) && (
             <Badge 
-              variant="secondary" 
-              className="gap-1"
+              variant="outline" 
+              className="gap-1 bg-white dark:bg-gray-100 text-black border-gray-300"
               data-testid="badge-difficulty-range-filter"
             >
               Level {minDifficulty}-{maxDifficulty}
