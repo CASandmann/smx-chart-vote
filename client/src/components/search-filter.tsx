@@ -188,7 +188,7 @@ export function SearchFilter({
             <Badge 
               key={filter}
               variant="secondary" 
-              className={`gap-1 ${difficultyColors[filter] || ""}`}
+              className={`gap-1 border ${difficultyColors[filter] || ""}`}
               data-testid={`badge-filter-${filter}`}
             >
               {difficultyTypes.find(d => d.value === filter)?.label}
@@ -204,7 +204,7 @@ export function SearchFilter({
           {(minDifficulty > 1 || maxDifficulty < 28) && (
             <Badge 
               variant="outline" 
-              className="gap-1 bg-white dark:bg-gray-100 text-black border-gray-300"
+              className="gap-1 border bg-white dark:bg-gray-100 text-black border-gray-300"
               data-testid="badge-difficulty-range-filter"
             >
               Level {minDifficulty}-{maxDifficulty}
