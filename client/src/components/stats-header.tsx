@@ -5,6 +5,7 @@ interface StatsHeaderProps {
   totalCharts: number;
   totalSongs: number;
   totalVotes: number;
+  userVoteCount: number;
   isLoading: boolean;
 }
 
@@ -12,6 +13,7 @@ export function StatsHeader({
   totalCharts,
   totalSongs,
   totalVotes,
+  userVoteCount,
   isLoading,
 }: StatsHeaderProps) {
   const stats = [
@@ -57,7 +59,17 @@ export function StatsHeader({
               >
                 {isLoading ? "..." : stat.value.toLocaleString()}
               </p>
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
+              <p className="text-sm text-muted-foreground">
+                {stat.label}
+                {stat.label === "Votes Cast" && userVoteCount > 0 && (
+                  <span
+                    className="ml-1 text-xs"
+                    data-testid="text-user-vote-count"
+                  >
+                    ({userVoteCount} by you)
+                  </span>
+                )}
+              </p>
             </div>
           </div>
         </Card>

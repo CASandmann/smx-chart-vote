@@ -24,7 +24,7 @@ export default function Home() {
   const [difficultyFilters, setDifficultyFilters] = useState<string[]>([]);
   const [minDifficulty, setMinDifficulty] = useState(1);
   const [maxDifficulty, setMaxDifficulty] = useState(28);
-  const [sortBy, setSortBy] = useState("votes");
+  const [sortBy, setSortBy] = useState("title");
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -180,6 +180,11 @@ export default function Home() {
     return voteCounts.reduce((sum, vc) => sum + vc.upvotes + vc.downvotes, 0);
   }, [voteCounts]);
 
+  const userVoteCount = useMemo(() => {
+    if (!voteCounts) return 0;
+    return voteCounts.filter((vc) => vc.userVote !== null).length;
+  }, [voteCounts]);
+
   const uniqueSongCount = useMemo(() => {
     if (!charts) return 0;
     const songIds = new Set(charts.map((c) => c.song_id));
@@ -281,6 +286,7 @@ export default function Home() {
           totalCharts={charts?.length ?? 0}
           totalSongs={uniqueSongCount}
           totalVotes={totalVotes}
+          userVoteCount={userVoteCount}
           isLoading={chartsLoading || votesLoading}
         />
 
