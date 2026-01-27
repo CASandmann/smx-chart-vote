@@ -8,6 +8,21 @@ import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { authStorage } from "./storage";
 
+const isDev = process.env.NODE_ENV !== "production";
+
+const devUser = {
+  claims: {
+    sub: "dev-user-123",
+    email: "dev@example.com",
+    first_name: "Dev",
+    last_name: "User",
+    profile_image_url: null,
+  },
+  access_token: "dev-token",
+  refresh_token: "dev-refresh",
+  expires_at: Math.floor(Date.now() / 1000) + 86400 * 365,
+};
+
 const getOidcConfig = memoize(
   async () => {
     return await client.discovery(
@@ -103,6 +118,26 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
+    // In dev mode, automatically log in with dummy user
+    if (isDev) {
+      (req as any).login(devUser, (err: any) => {
+        if (err) {
+          return next(err);
+        }
+        // Upsert the dev user in the database
+        authStorage.upsertUser({
+          id: devUser.claims.sub,
+          email: devUser.claims.email,
+          firstName: devUser.claims.first_name,
+          lastName: devUser.claims.last_name,
+          profileImageUrl: devUser.claims.profile_image_url,
+        }).then(() => {
+          res.redirect("/");
+        }).catch(next);
+      });
+      return;
+    }
+    
     ensureStrategy(req.hostname);
     passport.authenticate(`replitauth:${req.hostname}`, {
       prompt: "login consent",
@@ -120,6 +155,11 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/logout", (req, res) => {
     req.logout(() => {
+      // In dev mode, just redirect home without OIDC logout
+      if (isDev) {
+        return res.redirect("/");
+      }
+      
       res.redirect(
         client.buildEndSessionUrl(config, {
           client_id: process.env.REPL_ID!,
