@@ -168,7 +168,7 @@ export function ChartCard({
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
-              <p>Should be rated higher</p>
+              <p>Should be rated higher{userVote === "up" ? " (click again to remove vote)" : ""}</p>
             </TooltipContent>
           </Tooltip>
           <span
@@ -198,7 +198,7 @@ export function ChartCard({
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
-              <p>Should be rated lower</p>
+              <p>Should be rated lower{userVote === "down" ? " (click again to remove vote)" : ""}</p>
             </TooltipContent>
           </Tooltip>
         </div>
