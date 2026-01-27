@@ -204,7 +204,7 @@ export function SearchFilter({
           {(minDifficulty > 1 || maxDifficulty < 28) && (
             <Badge 
               variant="outline" 
-              className="gap-1 border border-border bg-white dark:bg-gray-100 text-black"
+              className="gap-1 border !border-border bg-white dark:bg-gray-100 text-black"
               data-testid="badge-difficulty-range-filter"
             >
               Level {minDifficulty}-{maxDifficulty}
