@@ -25,6 +25,7 @@ export default function Home() {
   const [minDifficulty, setMinDifficulty] = useState(1);
   const [maxDifficulty, setMaxDifficulty] = useState(28);
   const [sortBy, setSortBy] = useState("title");
+  const [showMyVotesOnly, setShowMyVotesOnly] = useState(false);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -98,12 +99,13 @@ export default function Home() {
     setDifficultyFilters([]);
     setMinDifficulty(1);
     setMaxDifficulty(28);
+    setShowMyVotesOnly(false);
   }, []);
 
   // Reset visible count when filters change
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE);
-  }, [searchQuery, difficultyFilters, minDifficulty, maxDifficulty, sortBy]);
+  }, [searchQuery, difficultyFilters, minDifficulty, maxDifficulty, sortBy, showMyVotesOnly]);
 
   const voteCountMap = useMemo(() => {
     const map = new Map<number, VoteCount>();
@@ -128,7 +130,11 @@ export default function Home() {
       const matchesDifficultyRange =
         chart.difficulty >= minDifficulty && chart.difficulty <= maxDifficulty;
 
-      return matchesSearch && matchesDifficultyType && matchesDifficultyRange;
+      const userVote = voteCountMap.get(chart.id);
+      const matchesMyVotes =
+        !showMyVotesOnly || (userVote !== undefined && userVote.userVote !== null);
+
+      return matchesSearch && matchesDifficultyType && matchesDifficultyRange && matchesMyVotes;
     });
 
     result.sort((a, b) => {
@@ -172,6 +178,7 @@ export default function Home() {
     minDifficulty,
     maxDifficulty,
     sortBy,
+    showMyVotesOnly,
     voteCountMap,
   ]);
 
@@ -300,6 +307,9 @@ export default function Home() {
           onDifficultyRangeChange={handleDifficultyRangeChange}
           sortBy={sortBy}
           onSortChange={setSortBy}
+          showMyVotesOnly={showMyVotesOnly}
+          onShowMyVotesChange={setShowMyVotesOnly}
+          isAuthenticated={isAuthenticated}
         />
 
         <div className="pb-8">

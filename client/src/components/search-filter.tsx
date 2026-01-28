@@ -28,6 +28,9 @@ interface SearchFilterProps {
   onDifficultyRangeChange: (min: number, max: number) => void;
   sortBy: string;
   onSortChange: (value: string) => void;
+  showMyVotesOnly: boolean;
+  onShowMyVotesChange: (value: boolean) => void;
+  isAuthenticated: boolean;
 }
 
 const difficultyTypes = [
@@ -66,8 +69,11 @@ export function SearchFilter({
   onDifficultyRangeChange,
   sortBy,
   onSortChange,
+  showMyVotesOnly,
+  onShowMyVotesChange,
+  isAuthenticated,
 }: SearchFilterProps) {
-  const hasActiveFilters = difficultyFilters.length > 0 || minDifficulty > 1 || maxDifficulty < 28;
+  const hasActiveFilters = difficultyFilters.length > 0 || minDifficulty > 1 || maxDifficulty < 28 || showMyVotesOnly;
 
   const toggleDifficultyFilter = (value: string) => {
     if (difficultyFilters.includes(value)) {
@@ -161,6 +167,23 @@ export function SearchFilter({
                   </div>
                 </div>
 
+                {isAuthenticated && (
+                  <div className="flex items-center space-x-2 pt-2 border-t">
+                    <Checkbox
+                      id="filter-my-votes"
+                      checked={showMyVotesOnly}
+                      onCheckedChange={(checked) => onShowMyVotesChange(checked === true)}
+                      data-testid="checkbox-my-votes"
+                    />
+                    <label
+                      htmlFor="filter-my-votes"
+                      className="text-sm cursor-pointer"
+                    >
+                      Show my votes only
+                    </label>
+                  </div>
+                )}
+
                 {hasActiveFilters && (
                   <Button
                     variant="ghost"
@@ -168,6 +191,7 @@ export function SearchFilter({
                     onClick={() => {
                       onDifficultyFiltersChange([]);
                       onDifficultyRangeChange(1, 28);
+                      onShowMyVotesChange(false);
                     }}
                     className="w-full"
                     data-testid="button-clear-filters"
@@ -212,6 +236,22 @@ export function SearchFilter({
                 onClick={() => onDifficultyRangeChange(1, 28)}
                 className="ml-1"
                 data-testid="button-remove-range-filter"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </Badge>
+          )}
+          {showMyVotesOnly && (
+            <Badge 
+              variant="secondary" 
+              className="gap-1 border border-border bg-primary text-primary-foreground"
+              data-testid="badge-my-votes-filter"
+            >
+              My Votes
+              <button 
+                onClick={() => onShowMyVotesChange(false)}
+                className="ml-1"
+                data-testid="button-remove-my-votes-filter"
               >
                 <X className="w-3 h-3" />
               </button>
