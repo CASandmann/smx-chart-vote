@@ -2,9 +2,9 @@ import {
   ChevronUp,
   ChevronDown,
   Music,
-  Users,
-  Trophy,
-  Percent,
+  PlayCircle,
+  CheckCircle,
+  Gauge,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -105,7 +105,7 @@ export function ChartCard({
                   className="text-xs text-muted-foreground flex items-center gap-1 cursor-help"
                   data-testid={`text-plays-${chart.id}`}
                 >
-                  <Users className="w-3 h-3" />
+                  <PlayCircle className="w-3 h-3" />
                   {chart.play_count.toLocaleString()}
                 </span>
               </TooltipTrigger>
@@ -119,7 +119,7 @@ export function ChartCard({
                   className="text-xs text-muted-foreground flex items-center gap-1 cursor-help"
                   data-testid={`text-passes-${chart.id}`}
                 >
-                  <Trophy className="w-3 h-3" />
+                  <CheckCircle className="w-3 h-3" />
                   {chart.pass_count.toLocaleString()}
                 </span>
               </TooltipTrigger>
@@ -133,7 +133,7 @@ export function ChartCard({
                   className="text-xs text-muted-foreground flex items-center gap-1 cursor-help"
                   data-testid={`text-pass-rate-${chart.id}`}
                 >
-                  <Percent className="w-3 h-3" />
+                  <Gauge className="w-3 h-3" />
                   {passPercentage}%
                 </span>
               </TooltipTrigger>
@@ -168,7 +168,10 @@ export function ChartCard({
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
-              <p>Should be rated higher{userVote === "up" ? " (click again to remove vote)" : ""}</p>
+              <p>
+                Should be rated higher
+                {userVote === "up" ? " (click again to remove vote)" : ""}
+              </p>
             </TooltipContent>
           </Tooltip>
           <span
@@ -198,7 +201,10 @@ export function ChartCard({
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
-              <p>Should be rated lower{userVote === "down" ? " (click again to remove vote)" : ""}</p>
+              <p>
+                Should be rated lower
+                {userVote === "down" ? " (click again to remove vote)" : ""}
+              </p>
             </TooltipContent>
           </Tooltip>
         </div>
