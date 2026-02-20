@@ -15,6 +15,8 @@ import { isUnauthorizedError } from "@/lib/auth-utils";
 import type { ChartWithSong, VoteCount } from "@shared/schema";
 import { Music2, LogIn, LogOut } from "lucide-react";
 
+const SLOW_REQUEST_MS = 3000;
+
 const ITEMS_PER_PAGE = 100;
 
 export default function Home() {
@@ -41,6 +43,8 @@ export default function Home() {
     queryKey: ["/api/votes"],
   });
 
+  const [pendingChartIds, setPendingChartIds] = useState<Set<number>>(new Set());
+
   const voteMutation = useMutation({
     mutationFn: async ({
       chartId,
@@ -51,10 +55,71 @@ export default function Home() {
     }) => {
       return apiRequest("POST", "/api/votes", { chartId, voteType });
     },
-    onSuccess: () => {
+    onMutate: async ({ chartId, voteType }) => {
+      setPendingChartIds((prev) => new Set(prev).add(chartId));
+
+      const slowTimer = setTimeout(() => {
+        toast({
+          title: "Saving your vote...",
+          description: "The server is waking up. This may take a moment.",
+        });
+      }, SLOW_REQUEST_MS);
+
+      await queryClient.cancelQueries({ queryKey: ["/api/votes"] });
+
+      const previousVotes = queryClient.getQueryData<VoteCount[]>(["/api/votes"]);
+
+      queryClient.setQueryData<VoteCount[]>(["/api/votes"], (old) => {
+        if (!old) return old;
+        const existing = old.find((vc) => vc.chartId === chartId);
+        if (existing) {
+          const prev = existing.userVote;
+          if (prev === voteType) {
+            return old.map((vc) =>
+              vc.chartId === chartId
+                ? {
+                    ...vc,
+                    upvotes: vc.upvotes - (voteType === "up" ? 1 : 0),
+                    downvotes: vc.downvotes - (voteType === "down" ? 1 : 0),
+                    userVote: null,
+                  }
+                : vc,
+            );
+          }
+          return old.map((vc) =>
+            vc.chartId === chartId
+              ? {
+                  ...vc,
+                  upvotes: vc.upvotes + (voteType === "up" ? 1 : 0) - (prev === "up" ? 1 : 0),
+                  downvotes: vc.downvotes + (voteType === "down" ? 1 : 0) - (prev === "down" ? 1 : 0),
+                  userVote: voteType,
+                }
+              : vc,
+          );
+        }
+        return [
+          ...old,
+          { chartId, upvotes: voteType === "up" ? 1 : 0, downvotes: voteType === "down" ? 1 : 0, userVote: voteType },
+        ];
+      });
+
+      return { previousVotes, slowTimer };
+    },
+    onSettled: (_data, _error, variables, context) => {
+      setPendingChartIds((prev) => {
+        const next = new Set(prev);
+        next.delete(variables.chartId);
+        return next;
+      });
+      if (context?.slowTimer) {
+        clearTimeout(context.slowTimer);
+      }
       queryClient.invalidateQueries({ queryKey: ["/api/votes"] });
     },
-    onError: (error: Error) => {
+    onError: (error: Error, _variables, context) => {
+      if (context?.previousVotes) {
+        queryClient.setQueryData(["/api/votes"], context.previousVotes);
+      }
       if (isUnauthorizedError(error)) {
         toast({
           title: "Login Required",
@@ -337,7 +402,7 @@ export default function Home() {
                     chart={chart}
                     voteData={voteCountMap.get(chart.id)}
                     onVote={handleVote}
-                    isPending={voteMutation.isPending}
+                    isPending={pendingChartIds.has(chart.id)}
                   />
                 ))}
               </div>

@@ -5,6 +5,7 @@ import {
   PlayCircle,
   CheckCircle,
   Gauge,
+  Loader2,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -164,7 +165,11 @@ export function ChartCard({
                 className={`h-6 w-6 p-0 ${userVote === "up" ? "toggle-elevate toggle-elevated" : ""}`}
                 data-testid={`button-upvote-${chart.id}`}
               >
-                <ChevronUp className="w-4 h-4" />
+                {isPending ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <ChevronUp className="w-4 h-4" />
+                )}
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
@@ -197,7 +202,11 @@ export function ChartCard({
                 className={`h-6 w-6 p-0 ${userVote === "down" ? "toggle-elevate toggle-elevated" : ""}`}
                 data-testid={`button-downvote-${chart.id}`}
               >
-                <ChevronDown className="w-4 h-4" />
+                {isPending ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
