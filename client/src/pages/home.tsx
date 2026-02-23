@@ -43,7 +43,9 @@ export default function Home() {
     queryKey: ["/api/votes"],
   });
 
-  const [pendingChartIds, setPendingChartIds] = useState<Set<number>>(new Set());
+  const [pendingChartIds, setPendingChartIds] = useState<Set<number>>(
+    new Set(),
+  );
 
   const voteMutation = useMutation({
     mutationFn: async ({
@@ -67,7 +69,9 @@ export default function Home() {
 
       await queryClient.cancelQueries({ queryKey: ["/api/votes"] });
 
-      const previousVotes = queryClient.getQueryData<VoteCount[]>(["/api/votes"]);
+      const previousVotes = queryClient.getQueryData<VoteCount[]>([
+        "/api/votes",
+      ]);
 
       queryClient.setQueryData<VoteCount[]>(["/api/votes"], (old) => {
         if (!old) return old;
@@ -90,8 +94,14 @@ export default function Home() {
             vc.chartId === chartId
               ? {
                   ...vc,
-                  upvotes: vc.upvotes + (voteType === "up" ? 1 : 0) - (prev === "up" ? 1 : 0),
-                  downvotes: vc.downvotes + (voteType === "down" ? 1 : 0) - (prev === "down" ? 1 : 0),
+                  upvotes:
+                    vc.upvotes +
+                    (voteType === "up" ? 1 : 0) -
+                    (prev === "up" ? 1 : 0),
+                  downvotes:
+                    vc.downvotes +
+                    (voteType === "down" ? 1 : 0) -
+                    (prev === "down" ? 1 : 0),
                   userVote: voteType,
                 }
               : vc,
@@ -99,7 +109,12 @@ export default function Home() {
         }
         return [
           ...old,
-          { chartId, upvotes: voteType === "up" ? 1 : 0, downvotes: voteType === "down" ? 1 : 0, userVote: voteType },
+          {
+            chartId,
+            upvotes: voteType === "up" ? 1 : 0,
+            downvotes: voteType === "down" ? 1 : 0,
+            userVote: voteType,
+          },
         ];
       });
 
@@ -170,7 +185,14 @@ export default function Home() {
   // Reset visible count when filters change
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE);
-  }, [searchQuery, difficultyFilters, minDifficulty, maxDifficulty, sortBy, showMyVotesOnly]);
+  }, [
+    searchQuery,
+    difficultyFilters,
+    minDifficulty,
+    maxDifficulty,
+    sortBy,
+    showMyVotesOnly,
+  ]);
 
   const voteCountMap = useMemo(() => {
     const map = new Map<number, VoteCount>();
@@ -197,9 +219,15 @@ export default function Home() {
 
       const userVote = voteCountMap.get(chart.id);
       const matchesMyVotes =
-        !showMyVotesOnly || (userVote !== undefined && userVote.userVote !== null);
+        !showMyVotesOnly ||
+        (userVote !== undefined && userVote.userVote !== null);
 
-      return matchesSearch && matchesDifficultyType && matchesDifficultyRange && matchesMyVotes;
+      return (
+        matchesSearch &&
+        matchesDifficultyType &&
+        matchesDifficultyRange &&
+        matchesMyVotes
+      );
     });
 
     result.sort((a, b) => {
@@ -429,7 +457,7 @@ export default function Home() {
             href="https://www.patreon.com/c/ZOM585"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 leading-[19px]"
             data-testid="link-patreon"
           >
             <img
