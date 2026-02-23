@@ -422,6 +422,20 @@ export default function Home() {
           )}
         </div>
       </main>
+
+      <footer className="sticky bottom-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t py-2">
+        <div className="container mx-auto px-4 flex justify-center">
+          <a
+            href="https://www.patreon.com/c/ZOM585"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            data-testid="link-patreon"
+          >
+            Support this project on Patreon
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }
