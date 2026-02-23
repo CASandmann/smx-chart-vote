@@ -429,9 +429,14 @@ export default function Home() {
             href="https://www.patreon.com/c/ZOM585"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
             data-testid="link-patreon"
           >
+            <img
+              src="https://c5.patreon.com/external/favicon/favicon-32x32.png"
+              alt="Patreon"
+              className="w-4 h-4"
+            />
             Support this project on Patreon
           </a>
         </div>
