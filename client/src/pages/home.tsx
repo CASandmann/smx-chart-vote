@@ -256,6 +256,8 @@ export default function Home() {
           const bRate = b.play_count > 0 ? b.pass_count / b.play_count : 0;
           return aRate - bRate;
         }
+        case "date":
+          return (b.song.date || "").localeCompare(a.song.date || "");
         case "title":
           return a.song.title.localeCompare(b.song.title);
         default:

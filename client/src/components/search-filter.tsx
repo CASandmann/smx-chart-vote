@@ -114,6 +114,7 @@ export function SearchFilter({
               <SelectItem value="plays">Most Played</SelectItem>
               <SelectItem value="pass-rate-desc">Pass Rate (High)</SelectItem>
               <SelectItem value="pass-rate-asc">Pass Rate (Low)</SelectItem>
+              <SelectItem value="date">Newest First</SelectItem>
               <SelectItem value="title">Title A-Z</SelectItem>
             </SelectContent>
           </Select>

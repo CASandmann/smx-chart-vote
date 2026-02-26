@@ -29,6 +29,7 @@ export interface Song {
   cover_thumb: string;
   cover: string;
   subtitle: string;
+  date: string;
 }
 
 export interface Chart {
