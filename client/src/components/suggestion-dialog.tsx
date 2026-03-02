@@ -2,6 +2,11 @@ import { useState } from "react";
 import { MessageSquarePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -52,15 +57,22 @@ export function SuggestionDialog() {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setMessage(""); }}>
-      <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          data-testid="button-suggestion"
-        >
-          <MessageSquarePlus className="w-4 h-4" />
-        </Button>
-      </DialogTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              data-testid="button-suggestion"
+            >
+              <MessageSquarePlus className="w-4 h-4" />
+            </Button>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Send feedback</p>
+        </TooltipContent>
+      </Tooltip>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Make a Suggestion</DialogTitle>
