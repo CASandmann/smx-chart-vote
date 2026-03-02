@@ -128,9 +128,9 @@ export function SearchFilter({
             </SelectContent>
           </Select>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Tooltip>
+          <Tooltip>
+            <Popover>
+              <PopoverTrigger asChild>
                 <TooltipTrigger asChild>
                   <Button
                     variant="outline"
@@ -143,96 +143,96 @@ export function SearchFilter({
                     <SlidersHorizontal className="w-4 h-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
-                  <p>Filters</p>
-                </TooltipContent>
-              </Tooltip>
-            </PopoverTrigger>
-            <PopoverContent className="w-80" align="end">
-              <div className="space-y-4">
-                <div className="space-y-3">
-                  <Label>Difficulty Types</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {difficultyTypes.map((dt) => (
-                      <div
-                        key={dt.value}
-                        className="flex items-center space-x-2"
-                      >
-                        <Checkbox
-                          id={`filter-${dt.value}`}
-                          checked={difficultyFilters.includes(dt.value)}
-                          onCheckedChange={() =>
-                            toggleDifficultyFilter(dt.value)
-                          }
-                          data-testid={`checkbox-difficulty-${dt.value}`}
-                        />
-                        <label
-                          htmlFor={`filter-${dt.value}`}
-                          className="text-sm cursor-pointer"
+              </PopoverTrigger>
+              <PopoverContent className="w-80" align="end">
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    <Label>Difficulty Types</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {difficultyTypes.map((dt) => (
+                        <div
+                          key={dt.value}
+                          className="flex items-center space-x-2"
                         >
-                          {dt.label}
-                        </label>
-                      </div>
-                    ))}
+                          <Checkbox
+                            id={`filter-${dt.value}`}
+                            checked={difficultyFilters.includes(dt.value)}
+                            onCheckedChange={() =>
+                              toggleDifficultyFilter(dt.value)
+                            }
+                            data-testid={`checkbox-difficulty-${dt.value}`}
+                          />
+                          <label
+                            htmlFor={`filter-${dt.value}`}
+                            className="text-sm cursor-pointer"
+                          >
+                            {dt.label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label>
-                    Difficulty Range: {minDifficulty} - {maxDifficulty}
-                  </Label>
-                  <div className="pt-2 px-1">
-                    <Slider
-                      min={1}
-                      max={28}
-                      step={1}
-                      value={[minDifficulty, maxDifficulty]}
-                      onValueChange={([min, max]) =>
-                        onDifficultyRangeChange(min, max)
-                      }
-                      data-testid="slider-difficulty-range"
-                    />
+                  <div className="space-y-2">
+                    <Label>
+                      Difficulty Range: {minDifficulty} - {maxDifficulty}
+                    </Label>
+                    <div className="pt-2 px-1">
+                      <Slider
+                        min={1}
+                        max={28}
+                        step={1}
+                        value={[minDifficulty, maxDifficulty]}
+                        onValueChange={([min, max]) =>
+                          onDifficultyRangeChange(min, max)
+                        }
+                        data-testid="slider-difficulty-range"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                {isAuthenticated && (
-                  <div className="flex items-center space-x-2 pt-2 border-t">
-                    <Checkbox
-                      id="filter-my-votes"
-                      checked={showMyVotesOnly}
-                      onCheckedChange={(checked) =>
-                        onShowMyVotesChange(checked === true)
-                      }
-                      data-testid="checkbox-my-votes"
-                    />
-                    <label
-                      htmlFor="filter-my-votes"
-                      className="text-sm cursor-pointer"
+                  {isAuthenticated && (
+                    <div className="flex items-center space-x-2 pt-2 border-t">
+                      <Checkbox
+                        id="filter-my-votes"
+                        checked={showMyVotesOnly}
+                        onCheckedChange={(checked) =>
+                          onShowMyVotesChange(checked === true)
+                        }
+                        data-testid="checkbox-my-votes"
+                      />
+                      <label
+                        htmlFor="filter-my-votes"
+                        className="text-sm cursor-pointer"
+                      >
+                        Show my votes only
+                      </label>
+                    </div>
+                  )}
+
+                  {hasActiveFilters && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        onDifficultyFiltersChange([]);
+                        onDifficultyRangeChange(1, 28);
+                        onShowMyVotesChange(false);
+                      }}
+                      className="w-full"
+                      data-testid="button-clear-filters"
                     >
-                      Show my votes only
-                    </label>
-                  </div>
-                )}
-
-                {hasActiveFilters && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      onDifficultyFiltersChange([]);
-                      onDifficultyRangeChange(1, 28);
-                      onShowMyVotesChange(false);
-                    }}
-                    className="w-full"
-                    data-testid="button-clear-filters"
-                  >
-                    <X className="w-4 h-4 mr-2" />
-                    Clear Filters
-                  </Button>
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
+                      <X className="w-4 h-4 mr-2" />
+                      Clear Filters
+                    </Button>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
+            <TooltipContent>
+              <p>Filters</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
