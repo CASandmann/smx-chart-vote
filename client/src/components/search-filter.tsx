@@ -11,6 +11,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -73,18 +78,22 @@ export function SearchFilter({
   onShowMyVotesChange,
   isAuthenticated,
 }: SearchFilterProps) {
-  const hasActiveFilters = difficultyFilters.length > 0 || minDifficulty > 1 || maxDifficulty < 28 || showMyVotesOnly;
+  const hasActiveFilters =
+    difficultyFilters.length > 0 ||
+    minDifficulty > 1 ||
+    maxDifficulty < 28 ||
+    showMyVotesOnly;
 
   const toggleDifficultyFilter = (value: string) => {
     if (difficultyFilters.includes(value)) {
-      onDifficultyFiltersChange(difficultyFilters.filter(f => f !== value));
+      onDifficultyFiltersChange(difficultyFilters.filter((f) => f !== value));
     } else {
       onDifficultyFiltersChange([...difficultyFilters, value]);
     }
   };
 
   const removeDifficultyFilter = (value: string) => {
-    onDifficultyFiltersChange(difficultyFilters.filter(f => f !== value));
+    onDifficultyFiltersChange(difficultyFilters.filter((f) => f !== value));
   };
 
   return (
@@ -101,7 +110,7 @@ export function SearchFilter({
             data-testid="input-search"
           />
         </div>
-        
+
         <div className="flex gap-2">
           <Select value={sortBy} onValueChange={onSortChange}>
             <SelectTrigger className="w-[160px]" data-testid="select-sort">
@@ -121,14 +130,23 @@ export function SearchFilter({
 
           <Popover>
             <PopoverTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="icon"
-                className={hasActiveFilters ? "border-primary text-primary" : ""}
-                data-testid="button-filters"
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className={
+                      hasActiveFilters ? "border-primary text-primary" : ""
+                    }
+                    data-testid="button-filters"
+                  >
+                    <SlidersHorizontal className="w-4 h-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Filters</p>
+                </TooltipContent>
+              </Tooltip>
             </PopoverTrigger>
             <PopoverContent className="w-80" align="end">
               <div className="space-y-4">
@@ -136,11 +154,16 @@ export function SearchFilter({
                   <Label>Difficulty Types</Label>
                   <div className="grid grid-cols-2 gap-2">
                     {difficultyTypes.map((dt) => (
-                      <div key={dt.value} className="flex items-center space-x-2">
+                      <div
+                        key={dt.value}
+                        className="flex items-center space-x-2"
+                      >
                         <Checkbox
                           id={`filter-${dt.value}`}
                           checked={difficultyFilters.includes(dt.value)}
-                          onCheckedChange={() => toggleDifficultyFilter(dt.value)}
+                          onCheckedChange={() =>
+                            toggleDifficultyFilter(dt.value)
+                          }
                           data-testid={`checkbox-difficulty-${dt.value}`}
                         />
                         <label
@@ -153,16 +176,20 @@ export function SearchFilter({
                     ))}
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
-                  <Label>Difficulty Range: {minDifficulty} - {maxDifficulty}</Label>
+                  <Label>
+                    Difficulty Range: {minDifficulty} - {maxDifficulty}
+                  </Label>
                   <div className="pt-2 px-1">
                     <Slider
                       min={1}
                       max={28}
                       step={1}
                       value={[minDifficulty, maxDifficulty]}
-                      onValueChange={([min, max]) => onDifficultyRangeChange(min, max)}
+                      onValueChange={([min, max]) =>
+                        onDifficultyRangeChange(min, max)
+                      }
                       data-testid="slider-difficulty-range"
                     />
                   </div>
@@ -173,7 +200,9 @@ export function SearchFilter({
                     <Checkbox
                       id="filter-my-votes"
                       checked={showMyVotesOnly}
-                      onCheckedChange={(checked) => onShowMyVotesChange(checked === true)}
+                      onCheckedChange={(checked) =>
+                        onShowMyVotesChange(checked === true)
+                      }
                       data-testid="checkbox-my-votes"
                     />
                     <label
@@ -210,14 +239,14 @@ export function SearchFilter({
       {hasActiveFilters && (
         <div className="flex flex-wrap gap-2">
           {difficultyFilters.map((filter) => (
-            <Badge 
+            <Badge
               key={filter}
-              variant="secondary" 
+              variant="secondary"
               className={`gap-1 border border-border ${difficultyColors[filter] || ""}`}
               data-testid={`badge-filter-${filter}`}
             >
-              {difficultyTypes.find(d => d.value === filter)?.label}
-              <button 
+              {difficultyTypes.find((d) => d.value === filter)?.label}
+              <button
                 onClick={() => removeDifficultyFilter(filter)}
                 className="ml-1"
                 data-testid={`button-remove-filter-${filter}`}
@@ -227,13 +256,13 @@ export function SearchFilter({
             </Badge>
           ))}
           {(minDifficulty > 1 || maxDifficulty < 28) && (
-            <Badge 
-              variant="outline" 
+            <Badge
+              variant="outline"
               className="gap-1 border !border-border bg-white dark:bg-gray-100 text-black"
               data-testid="badge-difficulty-range-filter"
             >
               Level {minDifficulty}-{maxDifficulty}
-              <button 
+              <button
                 onClick={() => onDifficultyRangeChange(1, 28)}
                 className="ml-1"
                 data-testid="button-remove-range-filter"
@@ -243,13 +272,13 @@ export function SearchFilter({
             </Badge>
           )}
           {showMyVotesOnly && (
-            <Badge 
-              variant="secondary" 
+            <Badge
+              variant="secondary"
               className="gap-1 border border-border bg-primary text-primary-foreground"
               data-testid="badge-my-votes-filter"
             >
               My Votes
-              <button 
+              <button
                 onClick={() => onShowMyVotesChange(false)}
                 className="ml-1"
                 data-testid="button-remove-my-votes-filter"

@@ -8,6 +8,11 @@ import { EmptyState } from "@/components/empty-state";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -360,16 +365,23 @@ export default function Home() {
                     {user.firstName || user.email}
                   </span>
                   <SuggestionDialog />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    asChild
-                    data-testid="button-logout"
-                  >
-                    <a href="/api/logout">
-                      <LogOut className="w-4 h-4" />
-                    </a>
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        asChild
+                        data-testid="button-logout"
+                      >
+                        <a href="/api/logout">
+                          <LogOut className="w-4 h-4" />
+                        </a>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Log out</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
               ) : (
                 <Button asChild data-testid="button-login">
