@@ -210,7 +210,7 @@ export async function registerRoutes(
       const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
         from: "SMX Chart Voter <onboarding@resend.dev>",
-        to: "CASandmann@gmail.com",
+        to: "casandmann@gmail.com",
         subject: `Feedback from ${userName} about SMX Chart Voter`,
         text: sanitizedMessage,
       });
