@@ -14,6 +14,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/auth-utils";
 import type { ChartWithSong, VoteCount } from "@shared/schema";
 import { Music2, LogIn, LogOut } from "lucide-react";
+import { SuggestionDialog } from "@/components/suggestion-dialog";
 
 const SLOW_REQUEST_MS = 3000;
 
@@ -358,6 +359,7 @@ export default function Home() {
                   <span className="text-sm hidden sm:inline">
                     {user.firstName || user.email}
                   </span>
+                  <SuggestionDialog />
                   <Button
                     variant="ghost"
                     size="icon"

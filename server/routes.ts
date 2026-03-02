@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { isAuthenticated } from "./replit_integrations/auth";
 import { z } from "zod";
 import type { Chart, Song, ChartWithSong } from "@shared/schema";
+import { Resend } from "resend";
 
 const voteSchema = z.object({
   chartId: z.number(),
@@ -178,6 +179,46 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error casting vote:", error);
       res.status(500).json({ error: "Failed to cast vote" });
+    }
+  });
+
+  const feedbackSchema = z.object({
+    message: z.string().min(1).max(2000),
+  });
+
+  app.post("/api/feedback", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = getUserId(req);
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const parsed = feedbackSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid feedback data" });
+      }
+
+      const rawUserName = req.user?.claims?.first_name || req.user?.claims?.email || userId;
+      const userName = String(rawUserName).replace(/[^\w@.\-\s]/g, "").slice(0, 100);
+      const sanitizedMessage = parsed.data.message
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#x27;");
+
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      await resend.emails.send({
+        from: "SMX Chart Voter <onboarding@resend.dev>",
+        to: "CASandmann@gmail.com",
+        subject: `Feedback from ${userName} about SMX Chart Voter`,
+        text: sanitizedMessage,
+      });
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error sending feedback:", error);
+      res.status(500).json({ error: "Failed to send feedback" });
     }
   });
 

@@ -73,6 +73,10 @@ Data is cached server-side for 5 minutes to reduce API calls.
 - **Zod**: Runtime type validation for API requests
 - **drizzle-zod**: Schema-to-Zod type generation
 
+### Email
+- **Resend**: Used to send user feedback/suggestion emails from the app (via `/api/feedback` endpoint)
+
 ### Environment Variables
 - `DATABASE_URL`: PostgreSQL connection string (required for database features)
 - `SESSION_SECRET`: Express session secret (defaults to fallback value)
+- `RESEND_API_KEY`: Resend API key for sending feedback emails
