@@ -20,6 +20,8 @@ import { isUnauthorizedError } from "@/lib/auth-utils";
 import type { ChartWithSong, VoteCount } from "@shared/schema";
 import { Music2, LogIn, LogOut } from "lucide-react";
 import { SuggestionDialog } from "@/components/suggestion-dialog";
+import { SmxNav } from "smx-tools-nav";
+import { useTheme } from "@/components/theme-provider";
 
 const SLOW_REQUEST_MS = 3000;
 
@@ -28,6 +30,7 @@ const ITEMS_PER_PAGE = 100;
 export default function Home() {
   const { toast } = useToast();
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
+  const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilters, setDifficultyFilters] = useState<string[]>([]);
   const [minDifficulty, setMinDifficulty] = useState(1);
@@ -333,6 +336,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen min-w-fit bg-background">
+      <SmxNav
+        activeUrl="https://vote.smx.tools"
+        theme={theme === "light" ? "light" : "dark"}
+      />
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">

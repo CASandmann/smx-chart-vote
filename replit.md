@@ -70,6 +70,7 @@ Data is cached server-side for 5 minutes to reduce API calls.
 ### Key Libraries
 - **@tanstack/react-query**: Server state management and caching
 - **shadcn/ui + Radix UI**: Accessible UI component primitives
+- **smx-tools-nav**: Shared navigation pane for smx.tools apps (requires `dedupe: ["react", "react-dom"]` in vite.config.ts)
 - **Zod**: Runtime type validation for API requests
 - **drizzle-zod**: Schema-to-Zod type generation
 

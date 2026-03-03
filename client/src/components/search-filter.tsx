@@ -128,10 +128,10 @@ export function SearchFilter({
             </SelectContent>
           </Select>
 
-          <Tooltip>
-            <Popover>
-              <PopoverTrigger asChild>
-                <TooltipTrigger asChild>
+          <Popover>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     size="icon"
@@ -142,8 +142,12 @@ export function SearchFilter({
                   >
                     <SlidersHorizontal className="w-4 h-4" />
                   </Button>
-                </TooltipTrigger>
-              </PopoverTrigger>
+                </PopoverTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Filters</p>
+              </TooltipContent>
+            </Tooltip>
               <PopoverContent className="w-80" align="end">
                 <div className="space-y-4">
                   <div className="space-y-3">
@@ -228,11 +232,7 @@ export function SearchFilter({
                   )}
                 </div>
               </PopoverContent>
-            </Popover>
-            <TooltipContent>
-              <p>Filters</p>
-            </TooltipContent>
-          </Tooltip>
+          </Popover>
         </div>
       </div>
 
