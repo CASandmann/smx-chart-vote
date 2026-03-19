@@ -9,6 +9,10 @@ channel = "stable-24_05"
 localPort = 5000
 externalPort = 80
 
+[[ports]]
+localPort = 5904
+externalPort = 3000
+
 [env]
 PORT = "5000"
 
@@ -37,6 +41,15 @@ author = "agent"
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Rebuild"
+mode = "sequential"
+author = 49862798
+
+[[workflows.workflow.tasks]]
+task = "packager.installForLanguage"
+args = "nodejs"
 
 [agent]
 integrations = ["javascript_log_in_with_replit:2.0.0"]
