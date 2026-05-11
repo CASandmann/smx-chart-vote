@@ -1,4 +1,4 @@
-import { type Vote, type InsertVote, type VoteCount, votes } from "@shared/schema";
+import { type Vote, type InsertVote, type VoteCount, type UserPreferences, votes, userPreferences } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
 import { randomUUID } from "crypto";
@@ -8,6 +8,8 @@ export interface IStorage {
   createOrUpdateVote(vote: InsertVote): Promise<Vote>;
   deleteVote(chartId: number, userId: string): Promise<void>;
   getVoteCounts(userId: string): Promise<VoteCount[]>;
+  getUserPreferences(userId: string): Promise<UserPreferences | undefined>;
+  saveUserPreferences(prefs: UserPreferences): Promise<UserPreferences>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -74,6 +76,32 @@ export class DatabaseStorage implements IStorage {
       chartId,
       ...data,
     }));
+  }
+
+  async getUserPreferences(userId: string): Promise<UserPreferences | undefined> {
+    const [prefs] = await db
+      .select()
+      .from(userPreferences)
+      .where(eq(userPreferences.userId, userId));
+    return prefs;
+  }
+
+  async saveUserPreferences(prefs: UserPreferences): Promise<UserPreferences> {
+    const [saved] = await db
+      .insert(userPreferences)
+      .values(prefs)
+      .onConflictDoUpdate({
+        target: userPreferences.userId,
+        set: {
+          sortBy: prefs.sortBy,
+          difficultyFilters: prefs.difficultyFilters,
+          minDifficulty: prefs.minDifficulty,
+          maxDifficulty: prefs.maxDifficulty,
+          showMyVotesOnly: prefs.showMyVotesOnly,
+        },
+      })
+      .returning();
+    return saved;
   }
 }
 

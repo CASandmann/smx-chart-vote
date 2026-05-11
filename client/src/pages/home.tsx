@@ -17,7 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/auth-utils";
-import type { ChartWithSong, VoteCount } from "@shared/schema";
+import type { ChartWithSong, VoteCount, UserPreferences } from "@shared/schema";
 import { Music2, LogIn, LogOut } from "lucide-react";
 import { SuggestionDialog } from "@/components/suggestion-dialog";
 import { SmxNav } from "smx-tools-nav";
@@ -38,7 +38,46 @@ export default function Home() {
   const [sortBy, setSortBy] = useState("title");
   const [showMyVotesOnly, setShowMyVotesOnly] = useState(false);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+  const [prefsLoaded, setPrefsLoaded] = useState(false);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  const { data: savedPrefs } = useQuery<UserPreferences | null>({
+    queryKey: ["/api/preferences"],
+    enabled: isAuthenticated,
+    staleTime: Infinity,
+  });
+
+  useEffect(() => {
+    if (savedPrefs && !prefsLoaded) {
+      setSortBy(savedPrefs.sortBy);
+      setDifficultyFilters(savedPrefs.difficultyFilters);
+      setMinDifficulty(savedPrefs.minDifficulty);
+      setMaxDifficulty(savedPrefs.maxDifficulty);
+      setShowMyVotesOnly(savedPrefs.showMyVotesOnly);
+      setPrefsLoaded(true);
+    } else if (savedPrefs === null && !prefsLoaded) {
+      setPrefsLoaded(true);
+    }
+  }, [savedPrefs, prefsLoaded]);
+
+  const savePrefs = useCallback(() => {
+    if (!isAuthenticated || !prefsLoaded) return;
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      apiRequest("PUT", "/api/preferences", {
+        sortBy,
+        difficultyFilters,
+        minDifficulty,
+        maxDifficulty,
+        showMyVotesOnly,
+      }).catch(() => {});
+    }, 800);
+  }, [isAuthenticated, prefsLoaded, sortBy, difficultyFilters, minDifficulty, maxDifficulty, showMyVotesOnly]);
+
+  useEffect(() => {
+    savePrefs();
+  }, [savePrefs]);
 
   const {
     data: charts,

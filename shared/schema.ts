@@ -1,8 +1,19 @@
-import { pgTable, text, varchar, integer, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, timestamp, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export * from "./models/auth";
+
+export const userPreferences = pgTable("user_preferences", {
+  userId: text("user_id").primaryKey(),
+  sortBy: text("sort_by").notNull().default("title"),
+  difficultyFilters: text("difficulty_filters").array().notNull().default([]),
+  minDifficulty: integer("min_difficulty").notNull().default(1),
+  maxDifficulty: integer("max_difficulty").notNull().default(28),
+  showMyVotesOnly: boolean("show_my_votes_only").notNull().default(false),
+});
+
+export type UserPreferences = typeof userPreferences.$inferSelect;
 
 export const votes = pgTable("votes", {
   id: varchar("id", { length: 36 }).primaryKey(),

@@ -182,6 +182,40 @@ export async function registerRoutes(
     }
   });
 
+  const prefsSchema = z.object({
+    sortBy: z.string(),
+    difficultyFilters: z.array(z.string()),
+    minDifficulty: z.number().int().min(1).max(28),
+    maxDifficulty: z.number().int().min(1).max(28),
+    showMyVotesOnly: z.boolean(),
+  });
+
+  app.get("/api/preferences", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = getUserId(req);
+      if (!userId) return res.status(401).json({ error: "Unauthorized" });
+      const prefs = await storage.getUserPreferences(userId);
+      res.json(prefs ?? null);
+    } catch (error) {
+      console.error("Error fetching preferences:", error);
+      res.status(500).json({ error: "Failed to fetch preferences" });
+    }
+  });
+
+  app.put("/api/preferences", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = getUserId(req);
+      if (!userId) return res.status(401).json({ error: "Unauthorized" });
+      const parsed = prefsSchema.safeParse(req.body);
+      if (!parsed.success) return res.status(400).json({ error: "Invalid preferences" });
+      const saved = await storage.saveUserPreferences({ userId, ...parsed.data });
+      res.json(saved);
+    } catch (error) {
+      console.error("Error saving preferences:", error);
+      res.status(500).json({ error: "Failed to save preferences" });
+    }
+  });
+
   const feedbackSchema = z.object({
     message: z.string().min(1).max(2000),
   });
