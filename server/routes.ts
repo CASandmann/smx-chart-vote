@@ -169,6 +169,14 @@ export async function registerRoutes(
 
       const { chartId, voteType } = parsed.data;
 
+      if (voteType === "down") {
+        const charts = await fetchChartsWithSongs();
+        const chart = charts.find((c) => c.id === chartId);
+        if (chart && chart.difficulty === 1) {
+          return res.status(400).json({ error: "Cannot downvote a chart with the minimum difficulty rating" });
+        }
+      }
+
       const vote = await storage.createOrUpdateVote({
         chartId,
         voteType,

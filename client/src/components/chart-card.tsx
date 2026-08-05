@@ -198,7 +198,7 @@ export function ChartCard({
                 variant={userVote === "down" ? "destructive" : "ghost"}
                 size="sm"
                 onClick={() => onVote(chart.id, "down")}
-                disabled={isPending}
+                disabled={isPending || chart.difficulty === 1}
                 className={`h-6 w-6 p-0 ${userVote === "down" ? "toggle-elevate toggle-elevated" : ""}`}
                 data-testid={`button-downvote-${chart.id}`}
               >
@@ -211,8 +211,9 @@ export function ChartCard({
             </TooltipTrigger>
             <TooltipContent side="left">
               <p>
-                Should be rated lower
-                {userVote === "down" ? " (click again to remove vote)" : ""}
+                {chart.difficulty === 1
+                  ? "Can't rate lower — difficulty 1 is the minimum"
+                  : `Should be rated lower${userVote === "down" ? " (click again to remove vote)" : ""}`}
               </p>
             </TooltipContent>
           </Tooltip>
